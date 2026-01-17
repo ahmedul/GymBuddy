@@ -142,7 +142,7 @@ export default function CreateSessionScreen() {
         <DateTimePicker
           value={scheduledAt}
           mode="date"
-          onChange={(_, date) => {
+          onChange={(_: unknown, date?: Date) => {
             setShowDatePicker(false);
             if (date) setScheduledAt(date);
           }}
@@ -153,7 +153,7 @@ export default function CreateSessionScreen() {
         <DateTimePicker
           value={scheduledAt}
           mode="time"
-          onChange={(_, date) => {
+          onChange={(_: unknown, date?: Date) => {
             setShowTimePicker(false);
             if (date) setScheduledAt(date);
           }}
