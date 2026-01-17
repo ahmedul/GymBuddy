@@ -1,5 +1,6 @@
 # 🏋️ GymBuddy
 
+[![CI](https://github.com/ahmedul/GymBuddy/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedul/GymBuddy/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green.svg)](https://fastapi.tiangolo.com/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.73-blueviolet.svg)](https://reactnative.dev/)

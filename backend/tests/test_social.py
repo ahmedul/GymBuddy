@@ -3,8 +3,7 @@ Unit tests for social endpoints.
 Tests: friends, friend requests, groups
 """
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from datetime import datetime
+from unittest.mock import patch, MagicMock
 
 from app.models.social import Friendship, FriendshipStatus, Group
 

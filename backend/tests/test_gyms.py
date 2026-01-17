@@ -3,10 +3,7 @@ Unit tests for gym endpoints.
 Tests: search gyms, create gym, favorites
 """
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from datetime import datetime
-
-from app.models.gym import Gym
+from unittest.mock import patch
 
 
 class TestGymModel:

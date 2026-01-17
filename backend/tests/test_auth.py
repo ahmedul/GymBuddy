@@ -3,7 +3,7 @@ Unit tests for authentication endpoints.
 Tests: register, login, get current user
 """
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from datetime import datetime
 
 from app.models.user import User, TrainingLevel, ProfileVisibility

@@ -3,10 +3,10 @@ Unit tests for session endpoints.
 Tests: create session, join/leave, exercises, invites
 """
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 
-from app.models.session import Session, SessionVisibility, RSVPStatus, SessionExercise
+from app.models.session import SessionVisibility, RSVPStatus
 
 
 class TestSessionModel:

@@ -2,7 +2,7 @@
 Pytest configuration and fixtures for GymBuddy tests.
 """
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 from datetime import datetime
 from uuid import uuid4
 from httpx import AsyncClient, ASGITransport
@@ -10,7 +10,7 @@ from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.models.user import User, TrainingLevel, ProfileVisibility
 from app.models.gym import Gym
-from app.models.session import Session, SessionVisibility, SessionParticipant, RSVPStatus, SessionExercise
+from app.models.session import Session, SessionVisibility, SessionExercise
 from app.models.social import Friendship, FriendshipStatus, Group
 from app.core.security import create_access_token
 

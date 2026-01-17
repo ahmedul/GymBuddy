@@ -3,7 +3,7 @@ Unit tests for user profile endpoints.
 Tests: get profile, update profile, get other user profile
 """
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from datetime import datetime
 
 from app.models.user import User, TrainingLevel, ProfileVisibility
