@@ -1,0 +1,794 @@
+{
+	"info": {
+		"_postman_id": "gymbuddy-api-collection",
+		"name": "GymBuddy API",
+		"description": "API collection for GymBuddy - Social Fitness App\n\n## Getting Started\n1. Start the backend: `docker compose up`\n2. Register a user via `/auth/register`\n3. Login to get a JWT token\n4. The token is automatically set for authenticated requests\n\n## Base URL\n- Local: `http://localhost:8000`\n- Production: Set `{{base_url}}` variable",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "gym_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "group_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "friendship_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Health check endpoint for load balancers"
+					}
+				},
+				{
+					"name": "Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						},
+						"description": "API root - returns app info and docs link"
+					}
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('user_id', jsonData.id);",
+									"    console.log('User registered with ID:', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"name\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "register"]
+						},
+						"description": "Register a new user account"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);",
+									"    console.log('Token saved successfully');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "SecurePass123!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login with email and password. Returns JWT token."
+					}
+				},
+				{
+					"name": "Get Current User (Auth)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						},
+						"description": "Get current authenticated user"
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users", "me"]
+						},
+						"description": "Get current user's full profile"
+					}
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\",\n    \"bio\": \"Fitness enthusiast 💪\",\n    \"training_level\": \"intermediate\",\n    \"visibility\": \"friends\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users", "me"]
+						},
+						"description": "Update current user's profile"
+					}
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users", "{{user_id}}"]
+						},
+						"description": "Get another user's public profile"
+					}
+				}
+			]
+		},
+		{
+			"name": "Friends",
+			"item": [
+				{
+					"name": "Send Friend Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('friendship_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"addressee_id\": \"{{user_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/friends/request",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "friends", "request"]
+						},
+						"description": "Send a friend request to another user"
+					}
+				},
+				{
+					"name": "Get Friends List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/friends",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "friends"]
+						},
+						"description": "Get list of all accepted friends"
+					}
+				},
+				{
+					"name": "Get Pending Requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/friends/requests",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "friends", "requests"]
+						},
+						"description": "Get pending friend requests"
+					}
+				},
+				{
+					"name": "Accept Friend Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/friends/requests/{{friendship_id}}/accept",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "friends", "requests", "{{friendship_id}}", "accept"]
+						},
+						"description": "Accept a pending friend request"
+					}
+				},
+				{
+					"name": "Decline Friend Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/friends/requests/{{friendship_id}}/decline",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "friends", "requests", "{{friendship_id}}", "decline"]
+						},
+						"description": "Decline a pending friend request"
+					}
+				}
+			]
+		},
+		{
+			"name": "Groups",
+			"item": [
+				{
+					"name": "Create Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('group_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Morning Lifters\",\n    \"description\": \"Early birds who lift heavy\",\n    \"is_public\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/groups",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "groups"]
+						},
+						"description": "Create a new workout group"
+					}
+				},
+				{
+					"name": "Get My Groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/groups",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "groups"]
+						},
+						"description": "Get groups owned by current user"
+					}
+				},
+				{
+					"name": "Get Group by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/groups/{{group_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "groups", "{{group_id}}"]
+						},
+						"description": "Get a specific group by ID"
+					}
+				},
+				{
+					"name": "Update Group",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Morning Lifters Elite\",\n    \"description\": \"Early birds who lift REALLY heavy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/groups/{{group_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "groups", "{{group_id}}"]
+						},
+						"description": "Update a group (owner only)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Gyms",
+			"item": [
+				{
+					"name": "Search Gyms",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms?q=fitness&radius=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms"],
+							"query": [
+								{
+									"key": "q",
+									"value": "fitness",
+									"description": "Search query"
+								},
+								{
+									"key": "lat",
+									"value": "40.7128",
+									"description": "Latitude",
+									"disabled": true
+								},
+								{
+									"key": "lon",
+									"value": "-74.0060",
+									"description": "Longitude",
+									"disabled": true
+								},
+								{
+									"key": "radius",
+									"value": "10",
+									"description": "Radius in km"
+								}
+							]
+						},
+						"description": "Search for gyms by name or location"
+					}
+				},
+				{
+					"name": "Create Gym",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('gym_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Iron Paradise Gym\",\n    \"address\": \"123 Fitness St, New York, NY 10001\",\n    \"latitude\": 40.7128,\n    \"longitude\": -74.0060,\n    \"place_type\": \"gym\",\n    \"phone\": \"+1-555-123-4567\",\n    \"website\": \"https://ironparadise.example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms"]
+						},
+						"description": "Create a custom gym/location"
+					}
+				},
+				{
+					"name": "Get Gym by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms/{{gym_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms", "{{gym_id}}"]
+						},
+						"description": "Get a specific gym by ID"
+					}
+				},
+				{
+					"name": "Get Favorite Gyms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms/favorites",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms", "favorites"]
+						},
+						"description": "Get user's favorite gyms"
+					}
+				},
+				{
+					"name": "Add Gym to Favorites",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms/favorites/{{gym_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms", "favorites", "{{gym_id}}"]
+						},
+						"description": "Add a gym to favorites"
+					}
+				},
+				{
+					"name": "Remove Gym from Favorites",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/gyms/favorites/{{gym_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "gyms", "favorites", "{{gym_id}}"]
+						},
+						"description": "Remove a gym from favorites"
+					}
+				}
+			]
+		},
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "Get Session Feed",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions?include_public=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions"],
+							"query": [
+								{
+									"key": "from_date",
+									"value": "2026-01-01T00:00:00Z",
+									"description": "Start date filter",
+									"disabled": true
+								},
+								{
+									"key": "to_date",
+									"value": "2026-12-31T23:59:59Z",
+									"description": "End date filter",
+									"disabled": true
+								},
+								{
+									"key": "include_public",
+									"value": "true",
+									"description": "Include public sessions"
+								}
+							]
+						},
+						"description": "Get session feed (friends' sessions + public)"
+					}
+				},
+				{
+					"name": "Create Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('session_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Morning Strength Training\",\n    \"description\": \"Upper body focus - chest, shoulders, triceps\",\n    \"gym_id\": \"{{gym_id}}\",\n    \"scheduled_at\": \"2026-01-20T07:00:00Z\",\n    \"duration_minutes\": 90,\n    \"visibility\": \"public\",\n    \"max_participants\": 6,\n    \"exercises\": [\n        {\n            \"name\": \"Bench Press\",\n            \"sets\": 4,\n            \"reps\": \"8-10\",\n            \"order\": 1\n        },\n        {\n            \"name\": \"Overhead Press\",\n            \"sets\": 3,\n            \"reps\": \"10-12\",\n            \"order\": 2\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions"]
+						},
+						"description": "Create a new workout session"
+					}
+				},
+				{
+					"name": "Get Session by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}"]
+						},
+						"description": "Get a specific session with full details"
+					}
+				},
+				{
+					"name": "Update Session",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Morning Strength Training - UPDATED\",\n    \"max_participants\": 8\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}"]
+						},
+						"description": "Update a session (creator only)"
+					}
+				},
+				{
+					"name": "Delete Session",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}"]
+						},
+						"description": "Delete a session (creator only)"
+					}
+				},
+				{
+					"name": "Join Session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/join",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "join"]
+						},
+						"description": "Join a workout session"
+					}
+				},
+				{
+					"name": "Leave Session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/leave",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "leave"]
+						},
+						"description": "Leave a session"
+					}
+				},
+				{
+					"name": "Update RSVP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"going\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/rsvp",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "rsvp"]
+						},
+						"description": "Update RSVP status (going, maybe, not_going)"
+					}
+				},
+				{
+					"name": "Check In",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/check-in",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "check-in"]
+						},
+						"description": "Check in to a session when you arrive"
+					}
+				},
+				{
+					"name": "Invite Users to Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_ids\": [\"{{user_id}}\"],\n    \"message\": \"Hey! Join me for this workout session!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/invite",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "invite"]
+						},
+						"description": "Invite friends to a session"
+					}
+				},
+				{
+					"name": "Add Exercise to Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Tricep Dips\",\n    \"sets\": 3,\n    \"reps\": \"12-15\",\n    \"notes\": \"Body weight or weighted\",\n    \"order\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/sessions/{{session_id}}/exercises",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "sessions", "{{session_id}}", "exercises"]
+						},
+						"description": "Add an exercise to an existing session"
+					}
+				}
+			]
+		}
+	]
+}
