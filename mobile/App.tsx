@@ -1,8 +1,17 @@
+import { useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 import RootNavigator from './src/navigation/RootNavigator';
+import {
+  registerForPushNotificationsAsync,
+  registerTokenWithBackend,
+  addNotificationReceivedListener,
+  addNotificationResponseReceivedListener,
+} from './src/services/notifications';
+import { useAuthStore } from './src/store/authStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,6 +23,56 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
+  const isAuthenticated = useAuthStore((state) => !!state.token);
+
+  useEffect(() => {
+    // Register for push notifications
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) {
+        setExpoPushToken(token);
+        // Register with backend if user is authenticated
+        if (isAuthenticated) {
+          registerTokenWithBackend(token);
+        }
+      }
+    });
+
+    // Listen for incoming notifications (app in foreground)
+    notificationListener.current = addNotificationReceivedListener(
+      (notification) => {
+        console.log('Notification received:', notification);
+      }
+    );
+
+    // Listen for notification taps
+    responseListener.current = addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('Notification tapped:', response);
+        const data = response.notification.request.content.data;
+        handleNotificationNavigation(data);
+      }
+    );
+
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+      if (responseListener.current) {
+        Notifications.removeNotificationSubscription(responseListener.current);
+      }
+    };
+  }, [isAuthenticated]);
+
+  // Re-register token when user logs in
+  useEffect(() => {
+    if (isAuthenticated && expoPushToken) {
+      registerTokenWithBackend(expoPushToken);
+    }
+  }, [isAuthenticated, expoPushToken]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
@@ -24,4 +83,23 @@ export default function App() {
       </SafeAreaProvider>
     </QueryClientProvider>
   );
+}
+
+// Handle navigation when notification is tapped
+function handleNotificationNavigation(data: Record<string, unknown>) {
+  const type = data?.type as string;
+  
+  switch (type) {
+    case 'session_invite':
+      console.log('Navigate to session:', data.sessionId);
+      break;
+    case 'friend_request':
+      console.log('Navigate to friends');
+      break;
+    case 'session_reminder':
+      console.log('Navigate to session:', data.sessionId);
+      break;
+    default:
+      console.log('Unknown notification type:', type);
+  }
 }
