@@ -1,0 +1,67 @@
+name: 🎯 Sprint Story
+description: A task for the weekly sprint
+title: "[Week X] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Sprint Story Template
+        Fill in the details for this sprint task.
+
+  - type: dropdown
+    id: week
+    attributes:
+      label: Sprint Week
+      options:
+        - Week 1 - Push Notifications
+        - Week 2 - Email & Password Reset
+        - Week 3 - Mobile Polish
+        - Week 4 - Recurring Sessions
+        - Week 5 - Session Chat
+        - Week 6 - Testing & Release
+    validations:
+      required: true
+
+  - type: textarea
+    id: story
+    attributes:
+      label: Story Description
+      description: What needs to be done?
+      placeholder: As a user, I want to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know it's done?
+      value: |
+        - [ ] Criteria 1
+        - [ ] Criteria 2
+        - [ ] Criteria 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Files to Modify
+      description: Which files will be changed?
+      placeholder: |
+        - `path/to/file1.ts`
+        - `path/to/file2.py`
+
+  - type: dropdown
+    id: estimate
+    attributes:
+      label: Time Estimate
+      options:
+        - 30 minutes
+        - 1 hour
+        - 1-2 hours
+        - 2-3 hours
+        - Half day
+    validations:
+      required: true
