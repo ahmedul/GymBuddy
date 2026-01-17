@@ -1,10 +1,14 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Text, Boolean, ForeignKey, DateTime, Integer, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
 from app.db.session import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.gym import Gym
 
 
 class SessionVisibility(str, enum.Enum):
@@ -111,7 +115,7 @@ class SessionExercise(Base):
     session: Mapped["Session"] = relationship(back_populates="exercises")
 
 
-# Imports for type hints
-from app.models.user import User
-from app.models.gym import Gym
-from app.models.social import Group
+# Imports at end to avoid circular imports - required by SQLAlchemy
+from app.models.user import User  # noqa: E402
+from app.models.gym import Gym  # noqa: E402
+from app.models.social import Group  # noqa: E402

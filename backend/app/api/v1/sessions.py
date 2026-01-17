@@ -120,7 +120,7 @@ async def update_session_info(
             detail="Only the creator can update this session"
         )
     
-    updated = await update_session(db, session, session_in)
+    await update_session(db, session, session_in)
     return _session_to_detail_response(await get_session_by_id(db, session_id))
 
 

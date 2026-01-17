@@ -1,10 +1,14 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Boolean, Enum as SQLEnum, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
 from app.db.session import Base
+
+if TYPE_CHECKING:
+    from app.models.gym import Gym
+    from app.models.session import Session, SessionParticipant
 
 
 class TrainingLevel(str, enum.Enum):

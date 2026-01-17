@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 from pydantic import BaseModel
 
 from app.models.social import FriendshipStatus, GroupRole

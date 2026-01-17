@@ -4,7 +4,6 @@ from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.social import Friendship, FriendshipStatus, Group
-from app.models.user import User
 from app.schemas.social import GroupCreate, GroupUpdate
 
 

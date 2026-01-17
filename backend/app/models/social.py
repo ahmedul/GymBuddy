@@ -1,10 +1,14 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Boolean, ForeignKey, DateTime, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
 from app.db.session import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.session import Session
 
 
 # Association table for group members

@@ -65,11 +65,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: './mobile/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install
 
       - name: Type check
         run: npx tsc --noEmit
@@ -89,11 +87,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: './infra/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install
 
       - name: Type check
         run: npx tsc --noEmit

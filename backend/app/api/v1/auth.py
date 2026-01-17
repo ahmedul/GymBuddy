@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.core.config import get_settings
 from app.core.security import verify_password, create_access_token, get_current_user
-from app.crud.user import get_user_by_email, create_user, create_oauth_user
-from app.schemas.auth import Token, LoginRequest, RegisterRequest
+from app.crud.user import get_user_by_email, create_user
+from app.schemas.auth import Token, RegisterRequest
 from app.schemas.user import UserCreate, UserResponse
 from app.models.user import User, TrainingLevel, ProfileVisibility
 

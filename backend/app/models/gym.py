@@ -1,9 +1,12 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+
+if TYPE_CHECKING:
+    from app.models.user import UserFavoriteGym
 
 
 class Gym(Base):
@@ -41,6 +44,6 @@ class Gym(Base):
     sessions: Mapped[List["Session"]] = relationship(back_populates="gym")
 
 
-# Import at end to avoid circular imports
-from app.models.user import UserFavoriteGym
-from app.models.session import Session
+# Import at end to avoid circular imports - required by SQLAlchemy
+from app.models.user import UserFavoriteGym  # noqa: E402
+from app.models.session import Session  # noqa: E402

@@ -137,7 +137,7 @@ async def get_session_feed(
     stmt = stmt.where(
         and_(
             or_(*visibility_conditions),
-            Session.is_cancelled == False
+            Session.is_cancelled.is_(False)
         )
     )
     
