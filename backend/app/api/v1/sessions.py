@@ -11,12 +11,14 @@ from app.crud.session import (
     add_exercise_to_session
 )
 from app.crud.gym import get_gym_by_id
+from app.crud.user import get_user_by_id
 from app.schemas.session import (
     SessionCreate, SessionUpdate, SessionResponse, SessionDetailResponse,
     SessionInvite, RSVPRequest, ExerciseCreate, ExerciseResponse
 )
 from app.models.user import User
 from app.models.session import RSVPStatus
+from app.services.push import send_session_invite_notification
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -235,6 +237,17 @@ async def invite_to_session(
             invited_by_id=current_user.id,
             invite_message=invite.message
         )
+        
+        # Send push notification
+        invitee = await get_user_by_id(db, user_id)
+        if invitee and getattr(invitee, 'notify_session_invites', True):
+            await send_session_invite_notification(
+                db=db,
+                invitee_id=user_id,
+                inviter_name=current_user.name,
+                session_title=session.title,
+                session_id=session_id
+            )
 
 
 @router.post("/{session_id}/exercises", response_model=ExerciseResponse)

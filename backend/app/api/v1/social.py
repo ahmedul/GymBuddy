@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -16,6 +16,7 @@ from app.schemas.social import (
 )
 from app.models.user import User
 from app.models.social import FriendshipStatus
+from app.services.push import send_friend_request_notification
 
 router = APIRouter(tags=["social"])
 
@@ -25,6 +26,7 @@ router = APIRouter(tags=["social"])
 @router.post("/friends/request", response_model=FriendshipResponse)
 async def send_friend_request(
     request: FriendRequest,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -52,6 +54,16 @@ async def send_friend_request(
         )
     
     friendship = await create_friend_request(db, current_user.id, request.addressee_id)
+    
+    # Send push notification if user has it enabled
+    if getattr(addressee, 'notify_friend_requests', True):
+        await send_friend_request_notification(
+            db=db,
+            addressee_id=addressee.id,
+            requester_name=current_user.name,
+            friendship_id=friendship.id
+        )
+    
     return friendship
 
 
