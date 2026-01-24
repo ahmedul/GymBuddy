@@ -5,12 +5,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import RootNavigator from './src/navigation/RootNavigator';
+import InAppNotification from './src/components/InAppNotification';
 import {
   registerForPushNotificationsAsync,
   registerTokenWithBackend,
   addNotificationReceivedListener,
   addNotificationResponseReceivedListener,
+  getLastNotificationResponse,
+  setBadgeCount,
+  getBadgeCount,
 } from './src/services/notifications';
+import {
+  navigationRef,
+  processPendingNavigation,
+  handleNotificationNavigation,
+} from './src/navigation/navigationService';
 import { useAuthStore } from './src/store/authStore';
 
 const queryClient = new QueryClient({
@@ -24,6 +33,7 @@ const queryClient = new QueryClient({
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [inAppNotification, setInAppNotification] = useState<Notifications.Notification | null>(null);
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -40,10 +50,22 @@ export default function App() {
       }
     });
 
+    // Check if app was opened via a notification
+    getLastNotificationResponse().then((response) => {
+      if (response) {
+        const data = response.notification.request.content.data;
+        handleNotificationNavigation(data);
+      }
+    });
+
     // Listen for incoming notifications (app in foreground)
     notificationListener.current = addNotificationReceivedListener(
       (notification) => {
         console.log('Notification received:', notification);
+        // Show in-app notification banner
+        setInAppNotification(notification);
+        // Increment badge count
+        getBadgeCount().then((count) => setBadgeCount(count + 1));
       }
     );
 
@@ -53,6 +75,8 @@ export default function App() {
         console.log('Notification tapped:', response);
         const data = response.notification.request.content.data;
         handleNotificationNavigation(data);
+        // Clear badge when user interacts
+        setBadgeCount(0);
       }
     );
 
@@ -73,33 +97,23 @@ export default function App() {
     }
   }, [isAuthenticated, expoPushToken]);
 
+  // Handle navigation ready
+  const onNavigationReady = () => {
+    processPendingNavigation();
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef} onReady={onNavigationReady}>
           <RootNavigator />
+          <InAppNotification
+            notification={inAppNotification}
+            onDismiss={() => setInAppNotification(null)}
+          />
           <StatusBar style="auto" />
         </NavigationContainer>
       </SafeAreaProvider>
     </QueryClientProvider>
   );
-}
-
-// Handle navigation when notification is tapped
-function handleNotificationNavigation(data: Record<string, unknown>) {
-  const type = data?.type as string;
-  
-  switch (type) {
-    case 'session_invite':
-      console.log('Navigate to session:', data.sessionId);
-      break;
-    case 'friend_request':
-      console.log('Navigate to friends');
-      break;
-    case 'session_reminder':
-      console.log('Navigate to session:', data.sessionId);
-      break;
-    default:
-      console.log('Unknown notification type:', type);
-  }
 }
