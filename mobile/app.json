@@ -25,8 +25,25 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.gymbuddy.app",
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "googleServicesFile": "./google-services.json"
     },
-    "plugins": ["expo-location", "expo-secure-store"]
+    "plugins": [
+      "expo-location",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#FF6B35",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
   }
 }
