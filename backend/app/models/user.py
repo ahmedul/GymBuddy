@@ -9,6 +9,7 @@ from app.db.session import Base
 if TYPE_CHECKING:
     from app.models.gym import Gym
     from app.models.session import Session, SessionParticipant
+    from app.models.notification import NotificationToken
 
 
 class TrainingLevel(str, enum.Enum):
@@ -57,10 +58,16 @@ class User(Base):
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
     
+    # Notification preferences
+    notify_session_invites: Mapped[bool] = mapped_column(Boolean, default=True)
+    notify_friend_requests: Mapped[bool] = mapped_column(Boolean, default=True)
+    notify_session_reminders: Mapped[bool] = mapped_column(Boolean, default=True)
+    
     # Relationships
     favorite_gyms: Mapped[List["UserFavoriteGym"]] = relationship(back_populates="user")
     sessions_created: Mapped[List["Session"]] = relationship(back_populates="creator")
     session_participations: Mapped[List["SessionParticipant"]] = relationship(back_populates="user")
+    notification_tokens: Mapped[List["NotificationToken"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class UserFavoriteGym(Base):

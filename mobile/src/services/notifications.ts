@@ -3,7 +3,7 @@ import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
-import { apiClient } from '../api/client';
+import api from '../api/client';
 
 // Configure how notifications appear when app is in foreground
 Notifications.setNotificationHandler({
@@ -94,7 +94,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
  */
 export async function registerTokenWithBackend(token: string): Promise<void> {
   try {
-    await apiClient.post('/notifications/token', {
+    await api.post('/notifications/token', {
       token,
       platform: Platform.OS,
     });
@@ -109,7 +109,7 @@ export async function registerTokenWithBackend(token: string): Promise<void> {
  */
 export async function unregisterTokenFromBackend(token: string): Promise<void> {
   try {
-    await apiClient.delete('/notifications/token', {
+    await api.delete('/notifications/token', {
       data: { token },
     });
     console.log('Push token unregistered from backend');

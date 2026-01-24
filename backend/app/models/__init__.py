@@ -5,11 +5,13 @@ from app.models.session import (
     Session, SessionParticipant, SessionExercise,
     SessionVisibility, RSVPStatus
 )
+from app.models.notification import NotificationToken
 
 __all__ = [
     "User", "UserFavoriteGym", "TrainingLevel", "ProfileVisibility",
     "Friendship", "FriendshipStatus", "Group", "GroupRole",
     "Gym",
     "Session", "SessionParticipant", "SessionExercise",
-    "SessionVisibility", "RSVPStatus"
+    "SessionVisibility", "RSVPStatus",
+    "NotificationToken"
 ]
