@@ -9,6 +9,7 @@ import CreateSessionScreen from '../screens/main/CreateSessionScreen';
 import FriendsScreen from '../screens/main/FriendsScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 import GymsScreen from '../screens/main/GymsScreen';
+import NotificationSettingsScreen from '../screens/settings/NotificationSettingsScreen';
 
 export type MainTabParamList = {
   FeedTab: undefined;
@@ -22,6 +23,7 @@ export type MainStackParamList = {
   MainTabs: undefined;
   SessionDetail: { sessionId: string };
   CreateSession: { gymId?: string };
+  NotificationSettings: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -85,6 +87,11 @@ export default function MainNavigator() {
         name="CreateSession" 
         component={CreateSessionScreen}
         options={{ title: 'New Session' }}
+      />
+      <Stack.Screen 
+        name="NotificationSettings" 
+        component={NotificationSettingsScreen}
+        options={{ title: 'Notifications' }}
       />
     </Stack.Navigator>
   );
